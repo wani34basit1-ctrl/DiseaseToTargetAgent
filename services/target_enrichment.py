@@ -1,4 +1,7 @@
+import re
 import requests
+
+from datetime import date, datetime
 
 
 class TargetEnrichmentService:
@@ -57,7 +60,7 @@ class TargetEnrichmentService:
         return proteins
 
     def get_pubmed_ids(self, gene_symbol, disease_name, limit=5):
-        """Return the latest matching PubMed papers with titles and dates."""
+        """Return matching PubMed papers with validated publication dates."""
 
         if not gene_symbol or not disease_name:
             return []
@@ -75,9 +78,12 @@ class TargetEnrichmentService:
             params={
                 "db": "pubmed",
                 "term": query,
-                "retmax": limit,
+                "retmax": max(limit * 3, limit),
                 "retmode": "json",
                 "sort": "pub date",
+                "datetype": "pdat",
+                "mindate": "1990/01/01",
+                "maxdate": date.today().strftime("%Y/%m/%d"),
             },
             timeout=self.timeout,
         )
@@ -100,20 +106,59 @@ class TargetEnrichmentService:
 
         summaries = response.json().get("result", {})
         papers = []
+        today = date.today()
 
         for pmid in ids:
             item = summaries.get(pmid, {})
             if not item:
                 continue
 
+            pubdate = item.get("pubdate", "")
+            match = re.match(
+                r"^\s*(\d{4})(?:\s+([A-Za-z]{3,9}))?(?:\s+(\d{1,2}))?",
+                pubdate,
+            )
+
+            if not match:
+                continue
+
+            year = int(match.group(1))
+            month_text = match.group(2)
+            day_text = match.group(3)
+
+            if year > today.year:
+                continue
+
+            if year == today.year:
+                if not month_text:
+                    continue
+
+                try:
+                    month = datetime.strptime(
+                        month_text[:3], "%b"
+                    ).month
+                except ValueError:
+                    continue
+
+                if month > today.month:
+                    continue
+
+                if month == today.month:
+                    if not day_text or int(day_text) > today.day:
+                        continue
+
             papers.append({
                 "pmid": pmid,
                 "title": item.get("title", "Title unavailable"),
-                "pubdate": item.get("pubdate", "Date unavailable"),
+                "pubdate": pubdate,
                 "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
             })
 
+            if len(papers) >= limit:
+                break
+
         return papers
+
 
     def get_reactome_pathways(self, uniprot_accession, limit=10):
         """Retrieve pathways associated with a UniProt accession."""

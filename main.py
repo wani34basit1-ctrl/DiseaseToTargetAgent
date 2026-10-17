@@ -7,6 +7,7 @@ import requests
 
 from agent.target_agent import TargetPrioritizationAgent
 from services.target_enrichment import TargetEnrichmentService
+from services.disease_treatments import get_disease_treatments
 
 
 def main():
@@ -83,7 +84,7 @@ def main():
     print("-" * 65)
 
     for i, publication in enumerate(enrichment["publications"], start=1):
-        print(f"\\n{i}. {publication['title']}")
+        print(f"\n{i}. {publication['title']}")
         print(f"   PMID: {publication['pmid']}")
         print(f"   Published: {publication['pubdate']}")
         print(f"   Link: {publication['url']}")
@@ -131,6 +132,23 @@ def main():
         drugs = []
         print(f"Drug information unavailable: {exc}")
 
+    # Display disease-level treatments separately from target-associated drugs.
+    treatments = get_disease_treatments(disease.name)
+
+    print("\\nDISEASE-LEVEL TREATMENT OPTIONS")
+    print("-" * 65)
+
+    if treatments:
+        for treatment in treatments:
+            print(f"Drug: {treatment['drug']}")
+            print(f"Class: {treatment['class']}")
+            print(f"Mechanism: {treatment['mechanism']}")
+            print(f"LDLR dependence: {treatment['ldlr_dependence']}")
+            print(f"Clinical context: {treatment['scope']}")
+            print("-" * 30)
+    else:
+        print("No curated treatment options available for this disease.")
+
     # Save the ranked target list.
     rows = []
 
@@ -161,6 +179,7 @@ def main():
     detail_path = os.path.splitext(args.output)[0] + "_details.json"
 
     details = {
+        "disease_treatments": treatments,
         "disease": disease.to_dict(),
         "selected_target": top_candidate.to_dict(),
         "uniprot": enrichment["uniprot_entries"],
