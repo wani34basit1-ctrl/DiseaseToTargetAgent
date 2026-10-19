@@ -321,24 +321,166 @@ class TargetEnrichmentService:
 
         return results
 
-    def enrich_target(self, target, disease_name):
-        """Collect supporting protein, literature, and pathway evidence."""
+    STRING_API_URL = "https://string-db.org/api/json"
 
-        proteins = self.get_uniprot(target.symbol)
-        publications = self.get_pubmed_ids(
-            target.symbol, disease_name
+    def get_string_network(
+        self, gene_symbol, species=9606, required_score=400, limit=10
+    ):
+        """Return a STRING protein-association network around a gene symbol.
+
+        STRING scores are confidence scores for protein associations, not proof
+        of direct physical binding. Scores are retained on a 0-1000 scale.
+        """
+        if not gene_symbol or not str(gene_symbol).strip():
+            return {"nodes": [], "edges": []}
+
+        response = self.session.get(
+            f"{self.STRING_API_URL}/network",
+            params={
+                "identifiers": str(gene_symbol).strip(),
+                "species": species,
+                "required_score": required_score,
+                "limit": limit,
+                "caller_identity": "Disease2Target",
+            },
+            timeout=self.timeout,
         )
+        response.raise_for_status()
+        records = response.json()
+
+        nodes_by_id = {}
+        edges = []
+        for item in records:
+            protein_a = item.get("stringId_A")
+            protein_b = item.get("stringId_B")
+            name_a = item.get("preferredName_A")
+            name_b = item.get("preferredName_B")
+            if protein_a and name_a:
+                nodes_by_id[protein_a] = {
+                    "string_id": protein_a,
+                    "preferred_name": name_a,
+                }
+            if protein_b and name_b:
+                nodes_by_id[protein_b] = {
+                    "string_id": protein_b,
+                    "preferred_name": name_b,
+                }
+            if protein_a and protein_b:
+                edges.append({
+                    "protein_a_id": protein_a,
+                    "protein_a": name_a,
+                    "protein_b_id": protein_b,
+                    "protein_b": name_b,
+                    "score": item.get("score"),
+                    "score_0_1000": (
+                        round(float(item["score"]) * 1000)
+                        if item.get("score") is not None else None
+                    ),
+                    "evidence_scores": {
+                        key: item.get(key)
+                        for key in ("nscore", "fscore", "pscore", "ascore", "escore", "dscore", "tscore")
+                        if item.get(key) is not None
+                    },
+                })
+
+        return {
+            "nodes": sorted(nodes_by_id.values(), key=lambda node: node["preferred_name"]),
+            "edges": edges,
+        }
+
+    def get_string_functional_enrichment(self, identifiers, species=9606):
+        """Fetch STRING functional enrichment for a list of protein identifiers."""
+        unique_ids = list(dict.fromkeys(
+            str(identifier).strip() for identifier in identifiers
+            if identifier and str(identifier).strip()
+        ))
+        if not unique_ids:
+            return []
+
+        response = self.session.get(
+            f"{self.STRING_API_URL}/enrichment",
+            params={
+                "identifiers": "\r".join(unique_ids),
+                "species": species,
+                "caller_identity": "Disease2Target",
+            },
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        results = response.json()
+        normalized = []
+        for item in results:
+            category = item.get("category", "")
+            normalized.append({
+                "category": category,
+                "term_id": item.get("term", item.get("termId")),
+                "term_name": item.get("description", item.get("termName", "Name unavailable")),
+                "number_of_genes": item.get("number_of_genes"),
+                "number_of_genes_in_background": item.get("number_of_genes_in_background"),
+                "input_gene_count": item.get("inputGenes", item.get("input_gene_count")),
+                "preferred_names": item.get("preferredNames", item.get("preferred_names", "")),
+                "p_value": item.get("p_value", item.get("pValue")),
+                "fdr": item.get("fdr"),
+                "source": "STRING",
+            })
+        return normalized
+
+    def enrich_target(self, target, disease_name):
+        """Collect protein, literature, pathway, interaction, and enrichment evidence.
+
+        Failures in the newly added STRING endpoints are isolated so that they
+        do not discard existing UniProt, PubMed, or Reactome results.
+        """
+        proteins = self.get_uniprot(target.symbol)
+        publications = self.get_pubmed_ids(target.symbol, disease_name)
 
         # Use the first reviewed protein entry as the initial mapping.
-        # This mapping should be verified if multiple proteins are returned.
+        # Verify this mapping when a gene has multiple protein isoforms.
         selected_protein = proteins[0] if proteins else None
-
         pathways = self.get_reactome_pathways(
             selected_protein["accession"] if selected_protein else None
         )
+
+        string_network = {"nodes": [], "edges": []}
+        go_enrichment = []
+        kegg_enrichment = []
+        enrichment_errors = []
+        try:
+            string_network = self.get_string_network(target.symbol)
+        except (requests.RequestException, RuntimeError, ValueError, TypeError) as exc:
+            enrichment_errors.append({"service": "STRING network", "error": str(exc)})
+
+        # Enrich the network's proteins; include the seed gene if STRING returns
+        # no node for it. STRING's network scores are association confidence,
+        # not a claim that every edge is a direct physical interaction.
+        identifiers = [node["preferred_name"] for node in string_network["nodes"]]
+        if target.symbol and target.symbol not in identifiers:
+            identifiers.insert(0, target.symbol)
+        try:
+            functional_terms = self.get_string_functional_enrichment(identifiers)
+            for term in functional_terms:
+                category = str(term.get("category") or "").upper()
+                if category in {"PROCESS", "GO:BP", "BIOLOGICAL_PROCESS"}:
+                    term["category"] = "GO:BP"
+                    go_enrichment.append(term)
+                elif category in {"FUNCTION", "GO:MF", "MOLECULAR_FUNCTION"}:
+                    term["category"] = "GO:MF"
+                    go_enrichment.append(term)
+                elif category in {"COMPONENT", "GO:CC", "CELLULAR_COMPONENT"}:
+                    term["category"] = "GO:CC"
+                    go_enrichment.append(term)
+                elif category == "KEGG" or category.startswith("KEGG"):
+                    term["category"] = "KEGG"
+                    kegg_enrichment.append(term)
+        except (requests.RequestException, RuntimeError, ValueError, TypeError) as exc:
+            enrichment_errors.append({"service": "STRING functional enrichment", "error": str(exc)})
 
         return {
             "uniprot_entries": proteins,
             "publications": publications,
             "pathways": pathways,
+            "string_network": string_network,
+            "go_enrichment": go_enrichment,
+            "kegg_enrichment": kegg_enrichment,
+            "enrichment_errors": enrichment_errors,
         }

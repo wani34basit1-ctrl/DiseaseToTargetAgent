@@ -67,6 +67,10 @@ def main():
             "uniprot_entries": [],
             "publications": [],
             "pathways": [],
+            "string_network": {"nodes": [], "edges": []},
+            "go_enrichment": [],
+            "kegg_enrichment": [],
+            "enrichment_errors": [{"service": "target enrichment", "error": str(exc)}],
         }
 
     print("\nUNIPROT PROTEIN INFORMATION")
@@ -101,6 +105,47 @@ def main():
 
     if not enrichment["pathways"]:
         print("No pathway records found for the selected protein.")
+
+
+    print("\nSTRING PROTEIN-ASSOCIATION NETWORK")
+    print("-" * 65)
+    network = enrichment.get("string_network") or {"nodes": [], "edges": []}
+    print(f"Network nodes: {len(network.get('nodes', []))}")
+    print(f"Network edges: {len(network.get('edges', []))}")
+    for edge in network.get("edges", [])[:10]:
+        score = edge.get("score_0_1000")
+        print(
+            f"{edge.get('protein_a', 'Unknown')} -- "
+            f"{edge.get('protein_b', 'Unknown')} | "
+            f"confidence score: {score if score is not None else 'Unavailable'}/1000"
+        )
+    if not network.get("edges"):
+        print("No STRING protein-association edges returned.")
+
+    print("\nGENE ONTOLOGY (GO) ENRICHMENT")
+    print("-" * 65)
+    go_terms = enrichment.get("go_enrichment", [])
+    for term in go_terms[:15]:
+        print(
+            f"{term.get('category', 'GO')}: {term.get('term_id', 'ID unavailable')} — "
+            f"{term.get('term_name', 'Name unavailable')} | FDR: {term.get('fdr', 'Unavailable')}"
+        )
+    if not go_terms:
+        print("No GO enrichment terms returned.")
+
+    print("\nKEGG PATHWAY ENRICHMENT")
+    print("-" * 65)
+    kegg_terms = enrichment.get("kegg_enrichment", [])
+    for term in kegg_terms[:15]:
+        print(
+            f"{term.get('term_id', 'ID unavailable')} — "
+            f"{term.get('term_name', 'Name unavailable')} | FDR: {term.get('fdr', 'Unavailable')}"
+        )
+    if not kegg_terms:
+        print("No KEGG enrichment terms returned.")
+
+    for issue in enrichment.get("enrichment_errors", []):
+        print(f"Enrichment warning ({issue.get('service', 'service')}): {issue.get('error', 'Unknown error')}")
 
     print("\nKNOWN DRUGS / CLINICAL CANDIDATES")
     print("-" * 65)
@@ -185,6 +230,10 @@ def main():
         "uniprot": enrichment["uniprot_entries"],
         "publications": enrichment["publications"],
         "pathways": enrichment["pathways"],
+        "string_network": enrichment.get("string_network", {"nodes": [], "edges": []}),
+        "go_enrichment": enrichment.get("go_enrichment", []),
+        "kegg_enrichment": enrichment.get("kegg_enrichment", []),
+        "enrichment_errors": enrichment.get("enrichment_errors", []),
         "known_drugs": drugs,
         "interpretation": (
             "Association scores are evidence-ranking measures, "
@@ -196,6 +245,20 @@ def main():
 
     with open(detail_path, "w", encoding="utf-8") as file:
         json.dump(details, file, indent=2, ensure_ascii=False)
+
+    output_stem = os.path.splitext(args.output)[0]
+    network = enrichment.get("string_network") or {"nodes": [], "edges": []}
+    export_tables = {
+        "_string_nodes.csv": network.get("nodes", []),
+        "_string_edges.csv": network.get("edges", []),
+        "_go_enrichment.csv": enrichment.get("go_enrichment", []),
+        "_kegg_enrichment.csv": enrichment.get("kegg_enrichment", []),
+        "_reactome_pathways.csv": enrichment.get("pathways", []),
+    }
+    for suffix, records in export_tables.items():
+        table_path = output_stem + suffix
+        pd.DataFrame(records).to_csv(table_path, index=False)
+        print(f"Additional results saved to: {table_path}")
 
     print(f"\nRanked targets saved to: {args.output}")
     print(f"Enriched details saved to: {detail_path}")
