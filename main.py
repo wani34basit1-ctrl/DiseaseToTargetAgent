@@ -10,6 +10,111 @@ from services.target_enrichment import TargetEnrichmentService
 from services.disease_treatments import get_disease_treatments
 
 
+def build_evidence_summary(enrichment, drugs, treatments, drug_status=None):
+    """Summarize evidence retrieval without confusing empty and failed results."""
+    statuses = dict(enrichment.get("evidence_status") or {})
+
+    statuses["known_drugs"] = drug_status or {
+        "status": "retrieved" if drugs else "empty",
+        "source": "Open Targets Platform",
+        "record_count": len(drugs),
+    }
+
+    statuses["disease_treatments"] = {
+        "status": "retrieved" if treatments else "empty",
+        "source": "curated_disease_treatment_catalogue",
+        "record_count": len(treatments),
+    }
+
+    counts = {
+        "retrieved": sum(
+            item.get("status") == "retrieved" for item in statuses.values()
+        ),
+        "empty": sum(
+            item.get("status") == "empty" for item in statuses.values()
+        ),
+        "failed": sum(
+            item.get("status") == "failed" for item in statuses.values()
+        ),
+    }
+
+    return {
+        "categories": statuses,
+        "status_counts": counts,
+        "category_interpretations": {
+            "uniprot": (
+                "Protein identity and annotation; not independent proof "
+                "of disease causality."
+            ),
+            "publications": (
+                "Literature matches; relevance and study quality require "
+                "individual review."
+            ),
+            "reactome_pathways": (
+                "Biological pathway context; not necessarily a drug mechanism."
+            ),
+            "string_network": (
+                "Protein associations; edges do not necessarily represent "
+                "direct physical binding."
+            ),
+            "go_enrichment": (
+                "Over-represented ontology terms; not proof of causation."
+            ),
+            "kegg_enrichment": (
+                "Enriched pathway associations; not proof of therapeutic effect."
+            ),
+            "known_drugs": (
+                "Target-associated candidates returned by Open Targets; "
+                "an empty result is not proof that no relevant treatment exists."
+            ),
+            "disease_treatments": (
+                "Curated disease-level treatment information; not automatically "
+                "linked to the selected target or personalized medical advice."
+            ),
+        },
+        "interpretation": (
+            "An empty result means retrieval succeeded but returned no records. "
+            "A failed result means retrieval did not complete successfully. "
+            "Neither status proves that the underlying biological evidence "
+            "or treatment does not exist."
+        ),
+    }
+
+
+
+
+def build_target_summary(target, ranked_targets):
+    """Explain the selected target's position without overstating its score."""
+    gene_id = getattr(target, "gene_id", None)
+    rank = next(
+        (
+            index
+            for index, candidate in enumerate(ranked_targets, start=1)
+            if getattr(candidate, "gene_id", None) == gene_id
+        ),
+        None,
+    )
+
+    return {
+        "gene_symbol": getattr(target, "symbol", None),
+        "gene_name": getattr(target, "name", None),
+        "ensembl_id": gene_id,
+        "rank": rank,
+        "ranked_target_count": len(ranked_targets),
+        "association_score": getattr(target, "association_score", None),
+        "ranking_basis": (
+            "Targets are prioritized by their Open Targets disease-target "
+            "association scores in descending order."
+        ),
+        "interpretation": (
+            "The association score is a target-prioritization measure, "
+            "not a probability of causality, druggability, or clinical success. "
+            "The top-ranked target should be interpreted alongside the "
+            "underlying evidence and independent biological validation."
+        ),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Disease2Target: Evidence-Enriched Agent"
@@ -71,6 +176,21 @@ def main():
             "go_enrichment": [],
             "kegg_enrichment": [],
             "enrichment_errors": [{"service": "target enrichment", "error": str(exc)}],
+            "evidence_status": {
+                key: {
+                    "status": "failed",
+                    "source": source,
+                    "record_count": None,
+                }
+                for key, source in {
+                    "uniprot": "UniProt",
+                    "publications": "PubMed",
+                    "reactome_pathways": "Reactome",
+                    "string_network": "STRING network",
+                    "go_enrichment": "STRING functional enrichment",
+                    "kegg_enrichment": "STRING functional enrichment",
+                }.items()
+            },
         }
 
     print("\nUNIPROT PROTEIN INFORMATION")
@@ -150,13 +270,24 @@ def main():
     print("\nKNOWN DRUGS / CLINICAL CANDIDATES")
     print("-" * 65)
 
+    drug_status = {
+        "status": "failed",
+        "source": "Open Targets Platform",
+        "record_count": None,
+    }
+
     try:
         drugs = enrichment_service.get_known_drugs(
             top_candidate.gene_id
         )
+        drug_status = {
+            "status": "retrieved" if drugs else "empty",
+            "source": "Open Targets Platform",
+            "record_count": len(drugs),
+        }
 
         if not drugs:
-            print("No known drug records returned for this target.")
+            print("No target-associated clinical candidates returned.")
 
         for record in drugs[:10]:
             drug = record.get("drug") or {}
@@ -175,6 +306,12 @@ def main():
 
     except (requests.RequestException, RuntimeError, ValueError) as exc:
         drugs = []
+        drug_status = {
+            "status": "failed",
+            "source": "Open Targets Platform",
+            "record_count": None,
+            "error": str(exc),
+        }
         print(f"Drug information unavailable: {exc}")
 
     # Display disease-level treatments separately from target-associated drugs.
@@ -223,7 +360,28 @@ def main():
     # Save detailed enrichment separately as JSON.
     detail_path = os.path.splitext(args.output)[0] + "_details.json"
 
+    evidence_summary = build_evidence_summary(
+        enrichment, drugs, treatments, drug_status
+    )
+
+    print("\\nEVIDENCE RETRIEVAL SUMMARY")
+    print("-" * 65)
+    for category, status in evidence_summary["categories"].items():
+        count = status.get("record_count")
+        count_text = "unknown" if count is None else str(count)
+        print(
+            f"{category}: {status.get('status')} "
+            f"(records: {count_text}; source: {status.get('source', 'unspecified')})"
+        )
+    print("Status counts:", evidence_summary["status_counts"])
+
+    target_summary = build_target_summary(
+        top_candidate, result.get("targets", [])
+    )
+
     details = {
+        "target_summary": target_summary,
+        "evidence_summary": evidence_summary,
         "disease_treatments": treatments,
         "disease": disease.to_dict(),
         "selected_target": top_candidate.to_dict(),
@@ -236,10 +394,15 @@ def main():
         "enrichment_errors": enrichment.get("enrichment_errors", []),
         "known_drugs": drugs,
         "interpretation": (
-            "Association scores are evidence-ranking measures, "
-            "not probabilities of clinical efficacy. Reactome "
-            "pathways describe biological context; they do not "
-            "necessarily represent a drug's mechanism of action."
+            "Association scores are evidence-ranking measures, not "
+            "probabilities of clinical efficacy. STRING edges represent "
+            "protein associations and do not necessarily indicate direct "
+            "physical binding. Reactome pathways and GO/KEGG enrichment "
+            "describe biological context, not proof of therapeutic effect. "
+            "Disease-level treatments are curated disease-context records "
+            "and are not automatically target-linked clinical candidates. "
+            "An empty result means no records were returned; a failed status "
+            "means retrieval was unsuccessful."
         ),
     }
 

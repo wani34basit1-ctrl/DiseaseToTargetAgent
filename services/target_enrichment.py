@@ -428,54 +428,168 @@ class TargetEnrichmentService:
         return normalized
 
     def enrich_target(self, target, disease_name):
-        """Collect protein, literature, pathway, interaction, and enrichment evidence.
+        """Collect evidence while isolating individual service failures."""
+        errors = []
+        statuses = {}
 
-        Failures in the newly added STRING endpoints are isolated so that they
-        do not discard existing UniProt, PubMed, or Reactome results.
-        """
-        proteins = self.get_uniprot(target.symbol)
-        publications = self.get_pubmed_ids(target.symbol, disease_name)
+        def retrieve(key, source, operation):
+            try:
+                records = operation()
+                records = records if records is not None else []
+                statuses[key] = {
+                    "status": "retrieved" if records else "empty",
+                    "source": source,
+                    "record_count": len(records),
+                }
+                return records
+            except (
+                requests.RequestException,
+                RuntimeError,
+                ValueError,
+                TypeError,
+                KeyError,
+            ) as exc:
+                errors.append({
+                    "service": source,
+                    "error": str(exc),
+                })
+                statuses[key] = {
+                    "status": "failed",
+                    "source": source,
+                    "record_count": None,
+                }
+                return []
 
-        # Use the first reviewed protein entry as the initial mapping.
-        # Verify this mapping when a gene has multiple protein isoforms.
-        selected_protein = proteins[0] if proteins else None
-        pathways = self.get_reactome_pathways(
-            selected_protein["accession"] if selected_protein else None
+        proteins = retrieve(
+            "uniprot",
+            "UniProt",
+            lambda: self.get_uniprot(target.symbol),
         )
 
-        string_network = {"nodes": [], "edges": []}
-        go_enrichment = []
-        kegg_enrichment = []
-        enrichment_errors = []
-        try:
-            string_network = self.get_string_network(target.symbol)
-        except (requests.RequestException, RuntimeError, ValueError, TypeError) as exc:
-            enrichment_errors.append({"service": "STRING network", "error": str(exc)})
+        publications = retrieve(
+            "publications",
+            "PubMed",
+            lambda: self.get_pubmed_ids(target.symbol, disease_name),
+        )
 
-        # Enrich the network's proteins; include the seed gene if STRING returns
-        # no node for it. STRING's network scores are association confidence,
-        # not a claim that every edge is a direct physical interaction.
-        identifiers = [node["preferred_name"] for node in string_network["nodes"]]
+        selected_protein = proteins[0] if proteins else None
+        accession = (
+            selected_protein.get("accession")
+            if selected_protein else None
+        )
+
+        pathways = retrieve(
+            "reactome_pathways",
+            "Reactome",
+            lambda: self.get_reactome_pathways(accession),
+        )
+
+        try:
+            string_network = self.get_string_network(target.symbol) or {
+                "nodes": [], "edges": []
+            }
+            node_count = len(string_network.get("nodes", []))
+            edge_count = len(string_network.get("edges", []))
+            statuses["string_network"] = {
+                "status": "retrieved" if node_count or edge_count else "empty",
+                "source": "STRING network",
+                "record_count": edge_count,
+                "node_count": node_count,
+            }
+        except (
+            requests.RequestException,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            KeyError,
+        ) as exc:
+            errors.append({"service": "STRING network", "error": str(exc)})
+            string_network = {"nodes": [], "edges": []}
+            statuses["string_network"] = {
+                "status": "failed",
+                "source": "STRING network",
+                "record_count": None,
+                "node_count": None,
+            }
+
+        identifiers = [
+            node.get("preferred_name")
+            for node in string_network.get("nodes", [])
+            if node.get("preferred_name")
+        ]
         if target.symbol and target.symbol not in identifiers:
             identifiers.insert(0, target.symbol)
-        try:
-            functional_terms = self.get_string_functional_enrichment(identifiers)
-            for term in functional_terms:
-                category = str(term.get("category") or "").upper()
-                if category in {"PROCESS", "GO:BP", "BIOLOGICAL_PROCESS"}:
-                    term["category"] = "GO:BP"
-                    go_enrichment.append(term)
-                elif category in {"FUNCTION", "GO:MF", "MOLECULAR_FUNCTION"}:
-                    term["category"] = "GO:MF"
-                    go_enrichment.append(term)
-                elif category in {"COMPONENT", "GO:CC", "CELLULAR_COMPONENT"}:
-                    term["category"] = "GO:CC"
-                    go_enrichment.append(term)
-                elif category == "KEGG" or category.startswith("KEGG"):
-                    term["category"] = "KEGG"
-                    kegg_enrichment.append(term)
-        except (requests.RequestException, RuntimeError, ValueError, TypeError) as exc:
-            enrichment_errors.append({"service": "STRING functional enrichment", "error": str(exc)})
+
+        def get_go_terms():
+            terms = self.get_string_functional_enrichment(identifiers)
+            return [
+                term for term in terms
+                if str(term.get("category") or "").upper()
+                in {"PROCESS", "GO:BP", "BIOLOGICAL_PROCESS",
+                    "FUNCTION", "GO:MF", "MOLECULAR_FUNCTION",
+                    "COMPONENT", "GO:CC", "CELLULAR_COMPONENT"}
+            ]
+
+        def get_kegg_terms():
+            terms = self.get_string_functional_enrichment(identifiers)
+            return [
+                term for term in terms
+                if (
+                    str(term.get("category") or "").upper() == "KEGG"
+                    or str(term.get("category") or "").upper().startswith("KEGG")
+                )
+            ]
+
+        # Make one functional-enrichment request and classify its results.
+        functional_terms = retrieve(
+            "functional_enrichment",
+            "STRING functional enrichment",
+            lambda: self.get_string_functional_enrichment(identifiers),
+        )
+
+        go_enrichment = []
+        kegg_enrichment = []
+
+        for term in functional_terms:
+            category = str(term.get("category") or "").upper()
+            if category in {"PROCESS", "GO:BP", "BIOLOGICAL_PROCESS"}:
+                term["category"] = "GO:BP"
+                go_enrichment.append(term)
+            elif category in {"FUNCTION", "GO:MF", "MOLECULAR_FUNCTION"}:
+                term["category"] = "GO:MF"
+                go_enrichment.append(term)
+            elif category in {"COMPONENT", "GO:CC", "CELLULAR_COMPONENT"}:
+                term["category"] = "GO:CC"
+                go_enrichment.append(term)
+            elif category == "KEGG" or category.startswith("KEGG"):
+                term["category"] = "KEGG"
+                kegg_enrichment.append(term)
+
+        # Expose GO and KEGG as separate evidence categories in the report.
+        statuses["go_enrichment"] = {
+            "status": (
+                "failed" if statuses["functional_enrichment"]["status"] == "failed"
+                else "retrieved" if go_enrichment else "empty"
+            ),
+            "source": "STRING functional enrichment",
+            "record_count": (
+                None if statuses["functional_enrichment"]["status"] == "failed"
+                else len(go_enrichment)
+            ),
+        }
+        statuses["kegg_enrichment"] = {
+            "status": (
+                "failed" if statuses["functional_enrichment"]["status"] == "failed"
+                else "retrieved" if kegg_enrichment else "empty"
+            ),
+            "source": "STRING functional enrichment",
+            "record_count": (
+                None if statuses["functional_enrichment"]["status"] == "failed"
+                else len(kegg_enrichment)
+            ),
+        }
+
+        statuses.pop("functional_enrichment", None)
 
         return {
             "uniprot_entries": proteins,
@@ -484,5 +598,6 @@ class TargetEnrichmentService:
             "string_network": string_network,
             "go_enrichment": go_enrichment,
             "kegg_enrichment": kegg_enrichment,
-            "enrichment_errors": enrichment_errors,
+            "enrichment_errors": errors,
+            "evidence_status": statuses,
         }
