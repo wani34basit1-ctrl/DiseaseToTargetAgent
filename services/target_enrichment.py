@@ -281,6 +281,8 @@ class TargetEnrichmentService:
             reports = row.get("clinicalReports") or []
 
             results.append({
+                "evidence_level": "target-associated",
+                "evidence_source": "Open Targets Platform",
                 "drug": {
                     "id": drug.get("id"),
                     "name": drug.get("name"),

@@ -75,4 +75,11 @@ def get_disease_treatments(disease_name):
     }
 
     normalized = aliases.get(normalized, normalized)
-    return list(DISEASE_TREATMENTS.get(normalized, []))
+    return [
+        {
+            **item,
+            "evidence_level": "disease-level",
+            "evidence_source": "curated_disease_treatment_catalogue",
+        }
+        for item in DISEASE_TREATMENTS.get(normalized, [])
+    ]
