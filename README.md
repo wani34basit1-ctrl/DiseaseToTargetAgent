@@ -82,10 +82,10 @@ python -m pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```env
-GROQ_API_KEY=your_groq_api_key_here
+GROQ_API_KEY=your_api_key_here
 ```
 
-Replace the placeholder with your own API key. Never commit `.env` or expose the key in source code, screenshots, logs, or public repositories.
+Replace the placeholder with your own API key.
 
 The AI synthesis feature requires valid Groq API credentials. Other application functionality may depend on the availability of its respective data services.
 
@@ -138,6 +138,4 @@ Data availability varies by disease, target, and external service. Missing evide
 
 Dyscovery is intended for educational and research purposes. Its results depend on database coverage, retrieval quality, source annotations, and model-generated interpretation. All findings require independent scientific review and, where appropriate, experimental validation. The application is not a clinical decision-support system and does not replace professional medical judgment.
 
-## License
 
-Check the repository for an existing license before redistributing or reusing this project.
