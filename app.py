@@ -45,8 +45,8 @@ def render_string_network(network):
 
     if not nodes or not edges:
         return (
-            "<div style='padding:24px;border:1px solid #dce5e1;"
-            "border-radius:14px;color:#647581;background:#fff'>"
+            "<div style='padding:24px;border:1px solid #17445a;"
+            "border-radius:14px;color:#9bb3c5;background:#081b2b'>"
             "<strong>STRING network unavailable</strong>"
             "<p>No protein associations were returned for this target.</p>"
             "</div>"
@@ -81,8 +81,8 @@ def render_string_network(network):
 
     if not valid_nodes or not valid_edges:
         return (
-            "<div style='padding:20px;border:1px solid #dce5e1;"
-            "border-radius:14px;color:#647581;background:#fff'>"
+            "<div style='padding:20px;border:1px solid #17445a;"
+            "border-radius:14px;color:#9bb3c5;background:#081b2b'>"
             "The network has no valid node-edge connections to display."
             "</div>"
         )
@@ -205,15 +205,15 @@ def render_string_network(network):
     hub_name = str(ordered_nodes[0].get("preferred_name") or "Unknown")
 
     return (
-        "<div style='background:#fff;border:1px solid #dce5e1;"
-        "border-radius:16px;padding:16px;color:#172b3a'>"
+        "<div style='background:#081b2b;border:1px solid #17445a;"
+        "border-radius:16px;padding:16px;color:#edf7ff'>"
         "<div style='display:flex;flex-wrap:wrap;gap:18px;"
         "align-items:center;justify-content:space-between'>"
         "<div><div style='font-size:11px;letter-spacing:1.2px;"
-        "color:#647581;font-weight:700'>PROTEIN ASSOCIATION MAP</div>"
+        "color:#9bb3c5;font-weight:700'>PROTEIN ASSOCIATION MAP</div>"
         f"<div style='font-size:22px;font-weight:700;margin-top:4px'>"
         f"{node_count} proteins · {edge_count} associations</div></div>"
-        "<div style='font-size:12px;color:#647581'>"
+        "<div style='font-size:12px;color:#9bb3c5'>"
         f"Highest degree: <strong>{escape(hub_name)}</strong>"
         "</div></div>"
         "<div style='margin:16px 0 8px;display:flex;flex-wrap:wrap;"
@@ -237,11 +237,11 @@ def render_string_network(network):
         + "".join(node_markup)
         + "</svg>"
         "<div style='margin-top:12px'><div style='font-size:11px;"
-        "font-weight:700;letter-spacing:.8px;color:#647581;"
+        "font-weight:700;letter-spacing:.8px;color:#9bb3c5;"
         "margin-bottom:6px'>EVIDENCE CHANNELS</div>"
         + legend_items
         + "</div>"
-        "<p style='font-size:12px;line-height:1.6;color:#647581;"
+        "<p style='font-size:12px;line-height:1.6;color:#9bb3c5;"
         "margin:12px 0 0'>Edge color indicates the strongest supplied "
         "STRING evidence channel; edges may have support from multiple "
         "channels. Edge width reflects the combined STRING confidence score. "
@@ -359,63 +359,63 @@ def analyze_disease(disease_name, top_n):
     summary = (
         '<div style="margin:0 0 18px">'
         '<div style="font-size:11px;letter-spacing:1.4px;'
-        'font-weight:700;color:#647581">D Y S C O V E R Y / ANALYSIS</div>'
+        'font-weight:700;color:#9bb3c5">D Y S C O V E R Y / ANALYSIS</div>'
         f'<h2 style="margin:6px 0 4px;font-size:28px;line-height:1.2;'
-        f'color:#172b3a">{safe_disease}</h2>'
-        f'<div style="font-size:12px;color:#647581">Disease ID: '
+        f'color:#edf7ff">{safe_disease}</h2>'
+        f'<div style="font-size:12px;color:#9bb3c5">Disease ID: '
         f'<code>{safe_disease_id}</code></div>'
         '</div>'
         '<div class="overview-card-grid" style="display:grid;'
         'gap:12px;margin:18px 0 24px">'
-        '<div style="background:#fff;border:1px solid #dce5e1;'
+        '<div style="background:#081b2b;border:1px solid #17445a;'
         'border-radius:14px;padding:17px">'
-        '<div style="font-size:11px;letter-spacing:.7px;color:#647581;'
+        '<div style="font-size:11px;letter-spacing:.7px;color:#9bb3c5;'
         'font-weight:700">TOP PRIORITIZED TARGET</div>'
-        f'<div style="font-size:25px;font-weight:750;color:#167d78;'
+        f'<div style="font-size:25px;font-weight:750;color:#17e0c0;'
         f'margin-top:8px">{safe_symbol}</div>'
-        f'<div style="font-size:13px;color:#172b3a;margin-top:3px">'
+        f'<div style="font-size:13px;color:#edf7ff;margin-top:3px">'
         f'{safe_target_name}</div>'
-        f'<div style="font-size:11px;color:#647581;margin-top:8px">'
+        f'<div style="font-size:11px;color:#9bb3c5;margin-top:8px">'
         f'Ensembl: {safe_gene_id}</div>'
         '</div>'
-        '<div style="background:#fff;border:1px solid #dce5e1;'
+        '<div style="background:#081b2b;border:1px solid #17445a;'
         'border-radius:14px;padding:17px">'
-        '<div style="font-size:11px;letter-spacing:.7px;color:#647581;'
+        '<div style="font-size:11px;letter-spacing:.7px;color:#9bb3c5;'
         'font-weight:700">ASSOCIATION SCORE</div>'
-        f'<div style="font-size:29px;font-weight:750;color:#172b3a;'
+        f'<div style="font-size:29px;font-weight:750;color:#edf7ff;'
         f'margin-top:8px">{escape(score_text)}</div>'
-        '<div style="font-size:11px;color:#647581;margin-top:7px">'
+        '<div style="font-size:11px;color:#9bb3c5;margin-top:7px">'
         'Ranking signal, not a probability of clinical efficacy.</div>'
         '</div>'
-        '<div style="background:#fff;border:1px solid #dce5e1;'
+        '<div style="background:#081b2b;border:1px solid #17445a;'
         'border-radius:14px;padding:17px">'
-        '<div style="font-size:11px;letter-spacing:.7px;color:#647581;'
+        '<div style="font-size:11px;letter-spacing:.7px;color:#9bb3c5;'
         'font-weight:700">TARGETS DISPLAYED</div>'
-        f'<div style="font-size:29px;font-weight:750;color:#172b3a;'
+        f'<div style="font-size:29px;font-weight:750;color:#edf7ff;'
         f'margin-top:8px">{len(targets)}</div>'
-        '<div style="font-size:11px;color:#647581;margin-top:7px">'
+        '<div style="font-size:11px;color:#9bb3c5;margin-top:7px">'
         'Ranked candidates returned for this disease.</div>'
         '</div>'
-        '<div style="background:#fff;border:1px solid #dce5e1;'
+        '<div style="background:#081b2b;border:1px solid #17445a;'
         'border-radius:14px;padding:17px">'
-        '<div style="font-size:11px;letter-spacing:.7px;color:#647581;'
+        '<div style="font-size:11px;letter-spacing:.7px;color:#9bb3c5;'
         'font-weight:700">EVIDENCE SOURCES RETRIEVED</div>'
-        f'<div style="font-size:29px;font-weight:750;color:#167d78;'
+        f'<div style="font-size:29px;font-weight:750;color:#17e0c0;'
         f'margin-top:8px">{retrieved_count}<span style="font-size:15px;'
-        f'font-weight:500;color:#647581"> / {evidence_total}</span></div>'
-        f'<div style="font-size:11px;color:#647581;margin-top:7px">'
+        f'font-weight:500;color:#9bb3c5"> / {evidence_total}</span></div>'
+        f'<div style="font-size:11px;color:#9bb3c5;margin-top:7px">'
         f'{failed_count} failed source(s); empty sources are counted '
         'separately.</div>'
         '</div>'
         '</div>'
-        '<h3 style="margin:22px 0 8px;color:#172b3a">'
+        '<h3 style="margin:22px 0 8px;color:#edf7ff">'
         'Evidence retrieval status</h3>'
         '<div style="overflow-x:auto;margin:12px 0">'
-        '<table style="width:100%;border-collapse:collapse;background:#fff">'
+        '<table style="width:100%;border-collapse:collapse;background:#081b2b">'
         '<thead><tr>'
-        '<th style="text-align:left;padding:10px;border-bottom:1px solid #dce5e1">Evidence category</th>'
-        '<th style="text-align:left;padding:10px;border-bottom:1px solid #dce5e1">Status</th>'
-        '<th style="text-align:right;padding:10px;border-bottom:1px solid #dce5e1">Records</th>'
+        '<th style="text-align:left;padding:10px;border-bottom:1px solid #17445a">Evidence category</th>'
+        '<th style="text-align:left;padding:10px;border-bottom:1px solid #17445a">Status</th>'
+        '<th style="text-align:right;padding:10px;border-bottom:1px solid #17445a">Records</th>'
         '</tr></thead><tbody>'
     )
 
@@ -452,15 +452,15 @@ def analyze_disease(disease_name, top_n):
         }.get(status, "#647581")
         summary += (
             "<tr>"
-            f'<td style="padding:10px;border-bottom:1px solid #edf0ed">{safe_label}</td>'
-            f'<td style="padding:10px;border-bottom:1px solid #edf0ed;color:{status_color};font-weight:600">{safe_status}</td>'
-            f'<td style="padding:10px;text-align:right;border-bottom:1px solid #edf0ed">{safe_count}</td>'
+            f'<td style="padding:10px;border-bottom:1px solid #17445a">{safe_label}</td>'
+            f'<td style="padding:10px;border-bottom:1px solid #17445a;color:{status_color};font-weight:600">{safe_status}</td>'
+            f'<td style="padding:10px;text-align:right;border-bottom:1px solid #17445a">{safe_count}</td>'
             "</tr>"
         )
 
     summary += (
         "</tbody></table></div>"
-        "<p style='margin-top:12px;color:#647581;font-size:13px'>"
+        "<p style='margin-top:12px;color:#9bb3c5;font-size:13px'>"
         "<strong>Status meanings:</strong> <code>retrieved</code> means data was returned; "
         "`empty` means the source returned no records; "
         "`failed` means retrieval failed.\n\n"
@@ -542,191 +542,270 @@ def analyze_disease(disease_name, top_n):
 
 CSS = """
 :root {
-  --ink: #172b3a;
-  --muted: #647581;
-  --navy: #102a36;
-  --teal: #167d78;
-  --mint: #dff2ed;
-  --line: #dce5e1;
-  --canvas: #fafbf8;
-  --paper: #ffffff;
+  color-scheme: dark;
+  --bg: #03111f;
+  --surface: #081b2b;
+  --surface-2: #0c2436;
+  --ink: #edf7ff;
+  --muted: #9bb3c5;
+  --cyan: #19c9e5;
+  --teal: #17e0c0;
+  --line: #17445a;
+  --paper: #071a29;
+}
+
+html, body, .main, .wrap {
+  background: var(--bg) !important;
+  color: var(--ink) !important;
 }
 
 .gradio-container {
-  max-width: 1440px !important;
+  max-width: 1500px !important;
   margin: auto !important;
-  padding: 0 clamp(16px, 3vw, 42px) 36px !important;
-  background: var(--canvas) !important;
+  padding: 0 clamp(14px, 3vw, 42px) 38px !important;
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(0, 143, 190, .12), transparent 32%),
+    radial-gradient(ellipse at 92% 18%, rgba(0, 90, 160, .12), transparent 30%),
+    var(--bg) !important;
   color: var(--ink) !important;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
 }
-body, .main, .wrap {
-  background: var(--canvas) !important;
+
+.gradio-container p,
+.gradio-container label,
+.gradio-container .prose,
+.gradio-container .markdown,
+.gradio-container .block {
   color: var(--ink) !important;
 }
-.gradio-container p, .gradio-container label,
-.gradio-container .prose, .gradio-container .markdown {
-  color: var(--ink) !important;
-}
+
 #brand-header {
-  padding: 26px 0 24px;
-  margin: 0 0 42px;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(25px, 4vw, 48px) clamp(2px, 1vw, 12px) 30px;
+  margin: 0 0 30px;
   border-bottom: 1px solid var(--line);
-  background: transparent;
+  background:
+    radial-gradient(ellipse at 86% 0%, rgba(0, 174, 220, .12), transparent 35%),
+    linear-gradient(115deg, rgba(3, 17, 31, .15), rgba(8, 38, 57, .25));
 }
-.brand-row {
+
+#brand-header:after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  right: -5%;
+  bottom: -55px;
+  width: 58%;
+  height: 100px;
+  opacity: .48;
+  background: repeating-radial-gradient(
+    ellipse at 50% 100%,
+    transparent 0 13px,
+    rgba(0, 177, 226, .22) 14px 15px,
+    transparent 16px 24px
+  );
+}
+
+.brand-top {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 15px;
+  justify-content: space-between;
+  gap: 28px;
 }
-.brand-logo {
-  width: 54px;
-  height: 54px;
-  flex: 0 0 54px;
-  border-radius: 15px;
-  background: var(--navy);
-  display: grid;
-  place-items: center;
-}
-.brand-title {
-  color: var(--navy) !important;
-  font-size: clamp(26px, 3vw, 34px);
-  font-weight: 760;
-  letter-spacing: -1.25px;
-  line-height: 1.1;
-}
-.brand-kicker {
-  color: var(--teal) !important;
-  font-size: 10px;
-  letter-spacing: 1.7px;
-  font-weight: 750;
-  margin-top: 7px;
-}
-.brand-subtitle {
-  color: var(--muted) !important;
-  font-size: 14px;
-  line-height: 1.65;
-  margin-top: 7px;
-}
-.brand-tags {
+
+.brand-identity {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 18px;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
 }
-.brand-tag {
-  color: #42615e !important;
-  background: #f0f5f1;
-  border: 1px solid #dce8e1;
-  border-radius: 5px;
-  padding: 6px 9px;
-  font-size: 11px;
-  font-weight: 600;
+
+.brand-symbol {
+  width: clamp(54px, 6vw, 76px);
+  height: clamp(54px, 6vw, 76px);
+  flex: 0 0 auto;
+  filter: drop-shadow(0 0 14px rgba(25, 201, 229, .22));
 }
-.section-heading {
+
+.brand-title {
+  color: #f4f9ff !important;
+  font-size: clamp(35px, 5.4vw, 66px);
+  font-weight: 780;
+  letter-spacing: -2.8px;
+  line-height: 1;
+  margin: 0;
+}
+
+.brand-title .brand-o {
+  color: var(--cyan);
+  text-shadow: 0 0 18px rgba(25, 201, 229, .35);
+}
+
+.brand-kicker {
+  color: #d5e7f2 !important;
+  font-size: clamp(10px, 1.25vw, 15px);
+  letter-spacing: clamp(1.5px, .28vw, 3.4px);
+  font-weight: 500;
+  margin-top: 11px;
+}
+
+.brand-tagline {
+  flex: 0 0 auto;
+  border-left: 2px solid var(--cyan);
+  padding: 8px 0 8px 24px;
+  color: #e5f5ff !important;
+  font-size: clamp(12px, 1.5vw, 19px);
+  letter-spacing: clamp(1px, .22vw, 2.5px);
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+.brand-tagline span {
   color: var(--teal) !important;
-  font-size: 10px;
-  letter-spacing: 1.7px;
+  padding: 0 7px;
+}
+
+.section-heading {
+  color: var(--cyan) !important;
+  font-size: 11px;
+  letter-spacing: 1.8px;
   font-weight: 750;
-  margin: 16px 0 10px;
+  margin: 18px 0 10px;
 }
-.gradio-container .block, .gradio-container .form,
-.gradio-container fieldset {
-  color: var(--ink) !important;
+
+.gradio-container .panel,
+.gradio-container .form,
+.gradio-container fieldset,
+.gradio-container .tabitem,
+.gradio-container .block,
+.gradio-container .wrap {
+  border-color: var(--line) !important;
 }
-.gradio-container input, .gradio-container textarea,
+
+.gradio-container input,
+.gradio-container textarea,
 .gradio-container select {
-  background: var(--paper) !important;
+  background: var(--surface) !important;
   color: var(--ink) !important;
-  border: 1px solid #ccd9d3 !important;
-  border-radius: 8px !important;
+  border: 1px solid #20516a !important;
+  border-radius: 9px !important;
 }
-.gradio-container input:focus, .gradio-container textarea:focus {
-  border-color: var(--teal) !important;
-  box-shadow: 0 0 0 2px rgba(22, 125, 120, .12) !important;
+
+.gradio-container input:focus,
+.gradio-container textarea:focus {
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 0 2px rgba(25, 201, 229, .15) !important;
 }
+
 .gradio-container input::placeholder,
 .gradio-container textarea::placeholder {
-  color: #82918b !important;
+  color: #819db1 !important;
   opacity: 1 !important;
 }
-.gradio-container label, .gradio-container .label-wrap {
-  color: #344b4a !important;
-  font-weight: 650 !important;
+
+.gradio-container label,
+.gradio-container .label-wrap {
+  color: #d8eaf6 !important;
+  font-weight: 600 !important;
 }
+
 .gradio-container button.primary {
-  background: var(--teal) !important;
-  color: #ffffff !important;
-  border: 1px solid var(--teal) !important;
-  border-radius: 8px !important;
-  font-weight: 700 !important;
-  box-shadow: none !important;
+  background: linear-gradient(100deg, #08aeca, #13cbbd) !important;
+  color: #031522 !important;
+  border: 1px solid #19c9e5 !important;
+  border-radius: 9px !important;
+  font-weight: 750 !important;
+  box-shadow: 0 0 20px rgba(0, 190, 220, .12) !important;
 }
+
 .gradio-container button.primary:hover {
-  background: #116963 !important;
+  filter: brightness(1.12);
 }
+
+.gradio-container button:not(.primary) {
+  border-color: var(--line) !important;
+}
+
 .gradio-container .tab-nav {
   border-bottom: 1px solid var(--line) !important;
-  gap: 4px;
+  gap: 5px;
 }
+
 .gradio-container .tab-nav button {
   color: var(--muted) !important;
   font-weight: 600 !important;
+  background: transparent !important;
 }
+
 .gradio-container .tab-nav button.selected {
-  color: var(--teal) !important;
-  border-color: var(--teal) !important;
+  color: var(--cyan) !important;
+  border-color: var(--cyan) !important;
 }
-.gradio-container table, .gradio-container .table-wrap,
+
+.gradio-container table,
+.gradio-container .table-wrap,
 .gradio-container .dataframe {
-  background: var(--paper) !important;
+  background: var(--surface) !important;
   color: var(--ink) !important;
   border-color: var(--line) !important;
 }
+
 .gradio-container th {
-  background: #f0f5f1 !important;
-  color: #294541 !important;
+  background: #102c40 !important;
+  color: #e5f6ff !important;
   font-weight: 700 !important;
 }
+
 .gradio-container td {
-  color: #344b4a !important;
+  color: #d4e6f2 !important;
 }
-.gradio-container .prose h1, .gradio-container .prose h2,
-.gradio-container .prose h3, .gradio-container .prose p,
+
+.gradio-container .prose h1,
+.gradio-container .prose h2,
+.gradio-container .prose h3,
+.gradio-container .prose p,
 .gradio-container .prose li {
   color: var(--ink) !important;
 }
+
 #developer-card {
-  background: var(--paper);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: clamp(20px, 3vw, 30px);
   margin-top: 18px;
-  box-shadow: none;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .12);
 }
+
 .developer-name {
-  color: var(--navy) !important;
+  color: #f0f8ff !important;
   font-size: 23px;
   font-weight: 750;
   letter-spacing: -.5px;
 }
+
 .developer-title {
-  color: var(--teal) !important;
+  color: var(--cyan) !important;
   font-weight: 650;
   margin-top: 5px;
 }
+
 .developer-link {
   display: inline-block;
-  color: #ffffff !important;
-  background: var(--navy);
-  border: 1px solid var(--navy);
-  border-radius: 7px;
+  color: #031522 !important;
+  background: var(--cyan);
+  border: 1px solid var(--cyan);
+  border-radius: 8px;
   padding: 10px 13px;
   text-decoration: none !important;
   overflow-wrap: anywhere;
   margin-top: 10px;
-  font-weight: 650;
+  font-weight: 700;
 }
+
 .disclaimer {
   color: var(--muted) !important;
   font-size: 12px;
@@ -735,70 +814,787 @@ body, .main, .wrap {
   padding-top: 18px;
   margin-top: 28px;
 }
+
 footer { display: none !important; }
 
 .overview-card-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
-@media (max-width: 1050px) {
+
+@media (max-width: 850px) {
+  .brand-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .brand-tagline {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 12px 0 0;
+    white-space: normal;
+  }
   .overview-card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
 @media (max-width: 600px) {
+  .brand-identity { gap: 11px; }
+  .brand-title {
+    font-size: clamp(31px, 9vw, 42px);
+    letter-spacing: -1.8px;
+  }
+  .brand-symbol {
+    width: 48px;
+    height: 48px;
+  }
+  .brand-kicker {
+    font-size: 9px;
+    letter-spacing: 1.2px;
+  }
+  #brand-header { margin-bottom: 24px; }
   .overview-card-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-@media (max-width: 600px) {
-  .brand-row { align-items: flex-start; gap: 12px; }
-  .brand-logo {
-    width: 46px;
-    height: 46px;
-    flex-basis: 46px;
-    border-radius: 12px;
-  }
-  #brand-header { margin-bottom: 28px; }
+/* DYScovery UI refinement overrides */
+.gradio-container,
+.gradio-container .contain,
+.gradio-container .form,
+.gradio-container .tabitem,
+.gradio-container .panel,
+.gradio-container [data-testid="block"],
+.gradio-container [data-testid="tabitem"] {
+  background-color: var(--bg) !important;
+  color: var(--ink) !important;
 }
+
+.gradio-container .panel,
+.gradio-container [data-testid="form"],
+.gradio-container fieldset {
+  background: linear-gradient(145deg, #071c2c, #061522) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+}
+
+.gradio-container .tab-nav {
+  background: transparent !important;
+  border-bottom: 1px solid var(--line) !important;
+  overflow-x: auto !important;
+}
+
+.gradio-container .tab-nav button {
+  color: #a8bfd0 !important;
+  border-bottom: 2px solid transparent !important;
+  white-space: nowrap !important;
+}
+
+.gradio-container .tab-nav button:hover {
+  color: #eafaff !important;
+  background: rgba(25, 201, 229, .06) !important;
+}
+
+.gradio-container .tab-nav button.selected {
+  color: var(--cyan) !important;
+  border-bottom-color: var(--cyan) !important;
+  background: rgba(25, 201, 229, .07) !important;
+}
+
+.gradio-container table,
+.gradio-container .table-wrap,
+.gradio-container .dataframe,
+.gradio-container [data-testid="dataframe"] {
+  background: #071a29 !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+.gradio-container th,
+.gradio-container thead,
+.gradio-container thead tr {
+  background: #103047 !important;
+  color: #e9f8ff !important;
+}
+
+.gradio-container td {
+  background: #081c2b !important;
+  color: #d8e9f5 !important;
+}
+
+.gradio-container tbody tr:nth-child(even) td {
+  background: #0b2233 !important;
+}
+
+.gradio-container tbody tr:hover td {
+  background: #103047 !important;
+}
+
+.gradio-container input,
+.gradio-container textarea,
+.gradio-container select,
+.gradio-container [role="textbox"] {
+  background: #081c2b !important;
+  color: #f0f8ff !important;
+  border-color: #20516a !important;
+}
+
+.gradio-container input::placeholder,
+.gradio-container textarea::placeholder {
+  color: #8ba8bb !important;
+}
+
+.gradio-container button.primary {
+  background: linear-gradient(100deg, #10d5d8, #08a9f4) !important;
+  color: #031522 !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 5px 20px rgba(0, 190, 220, .16) !important;
+}
+
+.gradio-container button.primary:hover {
+  filter: brightness(1.1);
+}
+
+.gradio-container pre,
+.gradio-container code,
+.gradio-container [data-testid="json"],
+.gradio-container .json-holder {
+  background: #061522 !important;
+  color: #c8f5ff !important;
+  border-color: var(--line) !important;
+  border-radius: 8px !important;
+}
+
+.gradio-container .prose,
+.gradio-container .markdown,
+.gradio-container .prose p,
+.gradio-container .prose li,
+.gradio-container .prose h1,
+.gradio-container .prose h2,
+.gradio-container .prose h3,
+.gradio-container .prose strong {
+  color: #e2eef8 !important;
+}
+
+.gradio-container .prose a {
+  color: #39d7ef !important;
+}
+
+.gradio-container hr {
+  border-color: var(--line) !important;
+}
+
+.gradio-container input[type="range"] {
+  accent-color: var(--cyan) !important;
+}
+
+@media (max-width: 700px) {
+  .gradio-container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+
+/* DYScovery inline-summary dark theme */
+.gradio-container [style*="background:#081b2b"],
+.gradio-container [style*="background: #081b2b"],
+.gradio-container [style*="background:#081b2bfff"],
+.gradio-container [style*="background: #081b2bfff"] {
+  background: #081b2b !important;
+  color: #edf7ff !important;
+  border-color: #17445a !important;
+}
+
+.gradio-container [style*="color:#edf7ff"],
+.gradio-container [style*="color: #edf7ff"],
+.gradio-container [style*="color:#294541"],
+.gradio-container [style*="color: #294541"] {
+  color: #edf7ff !important;
+}
+
+.gradio-container [style*="color:#9bb3c5"],
+.gradio-container [style*="color: #9bb3c5"] {
+  color: #9bb3c5 !important;
+}
+
+.gradio-container [style*="border-bottom:1px solid #17445a"],
+.gradio-container [style*="border-bottom:1px solid #17445a"] {
+  border-bottom-color: #17445a !important;
+}
+
+.gradio-container [style*="border:1px solid #17445a"],
+.gradio-container [style*="border: 1px solid #17445a"] {
+  border-color: #17445a !important;
+}
+
+.gradio-container [data-testid="textbox"],
+.gradio-container [data-testid="slider"],
+.gradio-container [data-testid="number"],
+.gradio-container [data-testid="form"],
+.gradio-container .panel {
+  background-color: #081b2b !important;
+  color: #edf7ff !important;
+  border-color: #17445a !important;
+}
+
+.gradio-container [data-testid="textbox"] input,
+.gradio-container [data-testid="number"] input {
+  background-color: #071a29 !important;
+  color: #edf7ff !important;
+}
+
+.gradio-container [data-testid="slider"] input {
+  accent-color: #19c9e5 !important;
+}
+
+.gradio-container [data-testid="form"] > *,
+.gradio-container .panel > * {
+  color: #edf7ff !important;
+}
+
+
+/* Integrated Dyscovery hero and search layout */
+#brand-header {
+  padding: 34px 18px 24px !important;
+  margin-bottom: 24px !important;
+  border-bottom: 1px solid #17445a !important;
+  background:
+    radial-gradient(ellipse at 0% 15%, rgba(0, 181, 220, .16), transparent 35%),
+    radial-gradient(ellipse at 100% 5%, rgba(0, 106, 200, .15), transparent 38%),
+    linear-gradient(145deg, #03111f, #061a2a) !important;
+}
+
+.brand-hero {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.brand-wordmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  color: #f4f9ff;
+  font-size: clamp(46px, 7vw, 88px);
+  line-height: 1;
+  font-weight: 780;
+  letter-spacing: -4px;
+  text-shadow: 0 0 24px rgba(25, 201, 229, .08);
+}
+
+.wordmark-d {
+  width: clamp(45px, 6vw, 72px);
+  height: clamp(50px, 6.4vw, 78px);
+  margin-right: 2px;
+  flex: 0 0 auto;
+}
+
+.wordmark-o {
+  width: .77em;
+  height: .77em;
+  margin: 0 .015em;
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  border: 3px solid #19c9e5;
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(25, 201, 229, .2);
+}
+
+.wordmark-o:before,
+.wordmark-o:after {
+  content: "";
+  position: absolute;
+  background: #19c9e5;
+  left: 50%;
+  top: -14%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 128%;
+}
+
+.wordmark-o:after {
+  left: -14%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 128%;
+  height: 2px;
+}
+
+.wordmark-crosshair {
+  position: absolute;
+  inset: 29%;
+  border: 2px solid #19c9e5;
+  border-radius: 50%;
+  background: #03111f;
+}
+
+.brand-kicker {
+  margin-top: 12px !important;
+  color: #e3f0fa !important;
+  font-size: clamp(13px, 1.7vw, 23px) !important;
+  font-weight: 450 !important;
+  letter-spacing: clamp(1.5px, .35vw, 4px) !important;
+  text-transform: none !important;
+}
+
+.brand-divider {
+  height: 2px;
+  width: 100px;
+  margin: 14px auto 12px;
+  background: linear-gradient(90deg, #19e0d0, #347eff);
+}
+
+.brand-tagline {
+  border: 0 !important;
+  padding: 0 !important;
+  white-space: normal !important;
+  color: #e8f5ff !important;
+  font-size: clamp(13px, 1.65vw, 21px) !important;
+  letter-spacing: clamp(1px, .22vw, 2.5px) !important;
+}
+
+.brand-tagline span {
+  color: #19c9e5 !important;
+  padding: 0 8px !important;
+}
+
+.brand-features {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(15px, 4vw, 58px);
+  flex-wrap: wrap;
+  margin: 26px auto 0;
+}
+
+.brand-features > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  color: #d8eaf6;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.feature-icon {
+  color: #19c9e5;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* DYScovery high-contrast dark UI fix */
+:root {
+  color-scheme: dark !important;
+  --body-background-fill: #03111f !important;
+  --background-fill-primary: #081b2b !important;
+  --background-fill-secondary: #0c2436 !important;
+  --block-background-fill: #081b2b !important;
+  --input-background-fill: #071a29 !important;
+  --border-color-primary: #17445a !important;
+  --body-text-color: #edf7ff !important;
+  --body-text-color-subdued: #a9c1d2 !important;
+  --color-accent: #19c9e5 !important;
+}
+
+html, body, body > div, .main, .wrap,
+.gradio-container, .gradio-container .main {
+  background-color: #03111f !important;
+  color: #edf7ff !important;
+}
+
+.gradio-container,
+.gradio-container * {
+  scrollbar-color: #176078 #071a29;
+}
+
+.gradio-container .panel,
+.gradio-container .search-panel,
+.gradio-container [data-testid="form"],
+.gradio-container [data-testid="block"],
+.gradio-container .block,
+.gradio-container fieldset,
+.gradio-container .tabitem,
+.gradio-container [data-testid="tabitem"] {
+  background-color: #081b2b !important;
+  color: #edf7ff !important;
+  border-color: #17445a !important;
+}
+
+.gradio-container [data-testid="textbox"],
+.gradio-container [data-testid="number"],
+.gradio-container [data-testid="slider"],
+.gradio-container [data-testid="dropdown"],
+.gradio-container [data-testid="input"],
+.gradio-container .wrap,
+.gradio-container .input-container {
+  background-color: #081b2b !important;
+  color: #edf7ff !important;
+  border-color: #20516a !important;
+}
+
+.gradio-container input,
+.gradio-container textarea,
+.gradio-container select,
+.gradio-container input[type="number"] {
+  background-color: #071a29 !important;
+  color: #f2f9ff !important;
+  border: 1px solid #20516a !important;
+  border-radius: 8px !important;
+  -webkit-text-fill-color: #f2f9ff !important;
+}
+
+.gradio-container input::placeholder,
+.gradio-container textarea::placeholder {
+  color: #8eacbf !important;
+  -webkit-text-fill-color: #8eacbf !important;
+  opacity: 1 !important;
+}
+
+.gradio-container label,
+.gradio-container .label-wrap,
+.gradio-container [data-testid="block"] label {
+  color: #c8dce9 !important;
+}
+
+.gradio-container button.primary {
+  background: linear-gradient(105deg, #11d5d3, #079ff0) !important;
+  color: #031522 !important;
+  -webkit-text-fill-color: #031522 !important;
+  border: 1px solid #19c9e5 !important;
+  border-radius: 10px !important;
+  font-weight: 750 !important;
+}
+
+.gradio-container .tab-nav {
+  background: #03111f !important;
+  border-bottom: 1px solid #17445a !important;
+}
+
+.gradio-container .tab-nav button {
+  background: transparent !important;
+  color: #b3c8d7 !important;
+  border-color: transparent !important;
+}
+
+.gradio-container .tab-nav button.selected {
+  color: #27d9ef !important;
+  border-bottom: 2px solid #19c9e5 !important;
+  background: #092236 !important;
+}
+
+.gradio-container table,
+.gradio-container .table-wrap,
+.gradio-container .dataframe,
+.gradio-container [data-testid="dataframe"] {
+  background: #071a29 !important;
+  color: #edf7ff !important;
+  border-color: #17445a !important;
+}
+
+.gradio-container th,
+.gradio-container thead,
+.gradio-container thead tr {
+  background: #103047 !important;
+  color: #eaf8ff !important;
+}
+
+.gradio-container td {
+  background: #081b2b !important;
+  color: #d8e9f5 !important;
+}
+
+.gradio-container tbody tr:nth-child(even) td {
+  background: #0b2233 !important;
+}
+
+.gradio-container pre,
+.gradio-container code,
+.gradio-container [data-testid="json"],
+.gradio-container .json-holder {
+  background: #061522 !important;
+  color: #c8f5ff !important;
+  border-color: #17445a !important;
+}
+
+.gradio-container .prose,
+.gradio-container .markdown,
+.gradio-container .prose p,
+.gradio-container .prose li,
+.gradio-container .prose h1,
+.gradio-container .prose h2,
+.gradio-container .prose h3,
+.gradio-container .prose strong {
+  color: #e2eef8 !important;
+}
+
+/* Fix inline-styled HTML cards and evidence summaries */
+.gradio-container [style*="background:#fff"],
+.gradio-container [style*="background: #fff"],
+.gradio-container [style*="background:#ffffff"],
+.gradio-container [style*="background: #ffffff"],
+.gradio-container [style*="background: white"] {
+  background: #081b2b !important;
+  color: #edf7ff !important;
+  border-color: #17445a !important;
+}
+
+.gradio-container [style*="color:#172b3a"],
+.gradio-container [style*="color: #172b3a"],
+.gradio-container [style*="color:#647581"],
+.gradio-container [style*="color: #647581"] {
+  color: #b4cad9 !important;
+}
+
+.brand-wordmark,
+.brand-wordmark > span {
+  color: #f4f9ff !important;
+  text-shadow: 0 0 20px rgba(25, 201, 229, .15) !important;
+}
+
+.brand-wordmark .wordmark-o {
+  color: #19c9e5 !important;
+}
+
+.brand-kicker,
+.brand-tagline,
+.brand-features > div {
+  color: #d9eaf6 !important;
+  opacity: 1 !important;
+}
+
+.brand-features .feature-icon {
+  color: #19c9e5 !important;
+}
+
+#brand-header {
+  min-height: 0 !important;
+  padding-bottom: 24px !important;
+  margin-bottom: 24px !important;
+}
+
+@media (max-width: 760px) {
+  .gradio-container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+
+
+
+/* Dyscovery: unified responsive search panel */
+.gradio-container .search-panel {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 14px 0 26px !important;
+  padding: clamp(14px, 2vw, 22px) !important;
+  background: linear-gradient(135deg, #071b2a, #041522) !important;
+  border: 1px solid #176078 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .16) !important;
+}
+
+.gradio-container .search-panel > div,
+.gradio-container .search-panel .form,
+.gradio-container .search-panel [data-testid="block"] {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.gradio-container .search-controls {
+  display: flex !important;
+  flex-flow: row wrap !important;
+  align-items: end !important;
+  gap: 16px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.gradio-container .search-controls > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.gradio-container .search-panel label,
+.gradio-container .search-panel .label-wrap {
+  color: #d9edf7 !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  line-height: 1.4 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.gradio-container .search-panel input:not([type="range"]) {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  padding: 11px 14px !important;
+  background: #061725 !important;
+  border: 1px solid #20516a !important;
+  border-radius: 9px !important;
+  color: #f2faff !important;
+  font-size: 15px !important;
+}
+
+.gradio-container .search-panel input:focus {
+  border-color: #19c9e5 !important;
+  box-shadow: 0 0 0 3px rgba(25, 201, 229, .10) !important;
+}
+
+.gradio-container .search-panel input[type="range"] {
+  width: 100% !important;
+  min-width: 0 !important;
+  accent-color: #19c9e5 !important;
+}
+
+.gradio-container .search-panel button.primary {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  padding: 12px 16px !important;
+  white-space: normal !important;
+  background: linear-gradient(105deg, #13d6d1, #08aaf4) !important;
+  border: 1px solid rgba(64, 232, 244, .75) !important;
+  border-radius: 10px !important;
+  color: #031522 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 5px 18px rgba(0, 183, 222, .15) !important;
+}
+
+@media (max-width: 760px) {
+  .gradio-container .search-controls {
+    align-items: stretch !important;
+    gap: 14px !important;
+  }
+
+  .gradio-container .search-controls > * {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+
+  .gradio-container .search-panel {
+    padding: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .gradio-container .search-panel button.primary {
+    width: 100% !important;
+  }
+}
+
+
+/* Search panel: remove nested ring and uneven control backgrounds */
+.gradio-container .search-panel {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: linear-gradient(135deg, #071b2a, #041522) !important;
+}
+
+.gradio-container .search-panel > div,
+.gradio-container .search-controls,
+.gradio-container .search-controls > *,
+.gradio-container .search-controls [data-testid="block"] {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Keep slider label and numeric value from colliding */
+.gradio-container .search-panel [data-testid="slider"] {
+  overflow: visible !important;
+  min-width: 0 !important;
+}
+
+.gradio-container .search-panel [data-testid="slider"] input[type="number"] {
+  position: static !important;
+  display: inline-block !important;
+  box-sizing: border-box !important;
+  width: 76px !important;
+  min-width: 76px !important;
+  height: 38px !important;
+  margin: 0 0 8px auto !important;
+  padding: 4px 8px !important;
+  background: #061725 !important;
+  color: #f2faff !important;
+  border: 1px solid #20516a !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+}
+
+.gradio-container .search-panel [data-testid="slider"] button {
+  max-width: 38px !important;
+}
+
+.gradio-container .search-panel button.primary {
+  align-self: end !important;
+  margin-top: 0 !important;
+}
+
+/* Retain a single subtle outline around the search area */
+.gradio-container .search-panel {
+  outline: 1px solid #176078 !important;
+  outline-offset: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .gradio-container .search-panel [data-testid="slider"] input[type="number"] {
+    margin-left: auto !important;
+  }
+}
+
 """
 
 HEADER = """
-<div id="brand-header">
-  <div class="brand-row">
-    <div class="brand-logo">
-      <svg viewBox="0 0 64 64" width="48" height="48"
-           role="img" aria-label="Dyscovery connected molecular target logo">
-        <g stroke="#68c9b5" stroke-width="2" fill="none">
-          <path d="M13 17 L31 10 L51 22 L48 43 L31 54 L12 43 Z"/>
-          <path d="M13 17 L31 32 L51 22 M31 32 L48 43 M31 32 L31 54 M12 43 L31 32"/>
-        </g>
-        <g fill="#f7fbf8">
-          <circle cx="13" cy="17" r="3"/>
-          <circle cx="31" cy="10" r="3"/>
-          <circle cx="51" cy="22" r="3"/>
-          <circle cx="48" cy="43" r="3"/>
-          <circle cx="31" cy="54" r="3"/>
-          <circle cx="12" cy="43" r="3"/>
-        </g>
-        <circle cx="31" cy="32" r="6" fill="#68c9b5" stroke="#102a36" stroke-width="2"/>
+<header id="brand-header">
+  <div class="brand-hero">
+    <div class="brand-wordmark" aria-label="Dyscovery">
+      <svg class="wordmark-d" viewBox="0 0 70 76" role="img" aria-label="DNA D">
+        <defs>
+          <linearGradient id="wordmark-d-gradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#19e0d0"/>
+            <stop offset="60%" stop-color="#19c9e5"/>
+            <stop offset="100%" stop-color="#347eff"/>
+          </linearGradient>
+        </defs>
+        <path d="M8 5 H28 C52 5 65 18 65 38 C65 58 52 71 28 71 H8 Z"
+              fill="none" stroke="url(#wordmark-d-gradient)" stroke-width="5"/>
+        <path d="M12 13 C40 20 12 30 40 38 C12 46 40 56 12 63"
+              fill="none" stroke="url(#wordmark-d-gradient)" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M15 18 H29 M20 27 H34 M20 49 H34 M15 58 H29"
+              stroke="#eafcff" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
+      <span>ysc</span>
+      <span class="wordmark-o" aria-label="o">
+        <span class="wordmark-crosshair"></span>
+      </span>
+      <span>very</span>
     </div>
-    <div>
-      <div class="brand-title">Dyscovery</div>
-      <div class="brand-kicker">DISEASE-TO-TARGET RESEARCH LAB</div>
-      <div class="brand-subtitle">
-        Explore disease biology, molecular targets, and supporting evidence.
-      </div>
+    <div class="brand-kicker">Disease-to-Target Research Lab</div>
+    <div class="brand-divider"></div>
+    <div class="brand-tagline">Bioinformatics <span>×</span> AI <span>×</span> Drug Discovery</div>
+    <div class="brand-features">
+      <div><span class="feature-icon">⌕</span><span>Disease<br/>Exploration</span></div>
+      <div><span class="feature-icon">◎</span><span>Target<br/>Prioritisation</span></div>
+      <div><span class="feature-icon">◇</span><span>Protein<br/>Analysis</span></div>
+      <div><span class="feature-icon">▤</span><span>Literature<br/>Insights</span></div>
+      <div><span class="feature-icon">⌘</span><span>Pathway<br/>Analysis</span></div>
+      <div><span class="feature-icon">⬡</span><span>Drug Discovery<br/>Opportunities</span></div>
     </div>
   </div>
-  <div class="brand-tags">
-    <span class="brand-tag">Target prioritization</span>
-    <span class="brand-tag">Protein associations</span>
-    <span class="brand-tag">Literature evidence</span>
-    <span class="brand-tag">Pathway enrichment</span>
-  </div>
-</div>
+</header>
 """
 
 ABOUT = """
@@ -1053,15 +1849,7 @@ def run_integrated_search(query, top_n):
 
 
 
-with gr.Blocks(
-    title="Dyscovery | Disease-to-Target Research Lab",
-    theme=gr.themes.Base(
-        primary_hue="cyan",
-        secondary_hue="teal",
-        neutral_hue="slate",
-    ),
-    css=CSS,
-) as demo:
+with gr.Blocks(title="Dyscovery | Disease-to-Target Research Lab") as demo:
 
     gr.HTML(HEADER)
 
@@ -1073,27 +1861,31 @@ with gr.Blocks(
         "biological evidence."
     )
 
-    with gr.Group(elem_classes=["panel"]):
-        with gr.Row():
+    with gr.Group(elem_classes=["panel", "search-panel"]):
+        with gr.Row(elem_classes=["search-controls"]):
             disease_input = gr.Textbox(
                 label="Disease or condition",
-                placeholder="e.g. familial hypercholesterolemia",
-                scale=4,
+                placeholder="e.g. familial hypercholesterolemia, breast cancer, Alzheimer's disease",
+                scale=5,
+                min_width=260,
             )
-            top_input = gr.Slider(
+            top_input = gr.Number(
+                value=10,
+                label="Number of top targets (1–20)",
+                precision=0,
                 minimum=1,
                 maximum=20,
-                value=10,
                 step=1,
-                label="Number of targets",
-                scale=1,
+                scale=2,
+                min_width=180,
             )
-
-        analyze_button = gr.Button(
-            "Run Search",
-            variant="primary",
-            size="lg",
-        )
+            analyze_button = gr.Button(
+                "▶  Analyze",
+                variant="primary",
+                size="lg",
+                scale=1,
+                min_width=150,
+            )
 
     summary_output = gr.Markdown()
 
@@ -1219,4 +2011,13 @@ with gr.Blocks(
 
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=int(__import__("os").environ.get("PORT", "7860")),
+        theme=gr.themes.Base(
+            primary_hue="cyan",
+            secondary_hue="teal",
+            neutral_hue="slate",
+        ),
+        css=CSS,
+    )
