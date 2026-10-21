@@ -17,10 +17,10 @@ from services.research_assistant import answer_research_question
 from main import build_target_summary, build_evidence_summary
 
 
-# ---------- Helpers ----------
+
 
 def empty_outputs():
-    # Return one empty value for every output after the summary.
+   
     return (
         pd.DataFrame(),  # Ranked targets
         pd.DataFrame(),  # UniProt
@@ -97,8 +97,7 @@ def render_string_network(network):
     cx, cy = width / 2, height / 2
     radius = min(width, height) * 0.35
 
-    # Put high-degree nodes near the centre and arrange remaining nodes
-    # around them. This is a deterministic overview layout, not a force simulation.
+    
     ordered_nodes = sorted(
         valid_nodes,
         key=lambda node: (-degree[node["string_id"]],
@@ -128,7 +127,7 @@ def render_string_network(network):
         _, key, label, color = max(available, key=lambda item: item[0])
         return key, label, color
 
-    # Filter control is embedded in the HTML; its slider updates SVG visibility.
+   
     svg_id = "string-network-" + str(abs(hash(
         tuple(sorted(str(node["string_id"]) for node in valid_nodes))
     )))
@@ -539,7 +538,7 @@ def analyze_disease(disease_name, top_n):
     )
 
 
-# ---------- Molecular research visual identity ----------
+
 
 CSS = """
 :root {
@@ -943,7 +942,7 @@ def build_synthesis_evidence(details):
             )
         )
 
-    # Normalize target-associated candidates separately from disease treatments.
+   
     records.extend(
         normalize_drug_evidence(
             details.get("known_drugs") or [],
@@ -952,7 +951,7 @@ def build_synthesis_evidence(details):
         )
     )
 
-    # Disease-level treatments do not necessarily act on the selected target.
+   
     from services.evidence_store import _record
 
     for item in details.get("disease_treatments") or []:
@@ -982,7 +981,7 @@ def build_synthesis_evidence(details):
         if record:
             records.append(record)
 
-    # Preserve data-availability information for the synthesis.
+   
     summary = details.get("evidence_summary") or {}
     record = _record(
         source="Pipeline",
@@ -1053,7 +1052,6 @@ def run_integrated_search(query, top_n):
     return (*standard_results, answer_text)
 
 
-# ---------- Dashboard ----------
 
 with gr.Blocks(
     title="Dyscovery | Disease-to-Target Research Lab",
